@@ -1,7 +1,8 @@
 name: Build AnyKernel
 on:
+  push:
   schedule:
-    - cron: '0 0 1 ? * L *'
+    - cron: '0 0 * * 0'
 
 jobs:
   build:
