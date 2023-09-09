@@ -10,7 +10,11 @@ jobs:
     steps:
       - name: test
         run: | 
+          git clone https://github.com/KaguraiYoRoy/AnyKernel3-equuleus AnyKernel3
           touch a.zip
+          cd AnyKernel3
+          git tag -a test -m "test"
+          git push --tags
       - name: testrelease
         uses: softprops/action-gh-release@v1
         with:
@@ -28,7 +32,7 @@ jobs:
           git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1 -b android-13.0.0_r43 clang
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-10.0.0_r32 --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-10.0.0_r32 --depth=1
-          git clone https://github.com/KaguraiYoRoy/AnyKernel3-equuleus AnyKernel3 --depth=1
+          git clone https://github.com/KaguraiYoRoy/AnyKernel3-equuleus AnyKernel3
       - name: Setup KernelSU
         run: |
           cd $GITHUB_WORKSPACE/sdm845
@@ -68,6 +72,9 @@ jobs:
           echo "[+]Output: $OUTPUT_FILE"
           zip -r $OUTPUT_FILE *
           mv $OUTPUT_FILE $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE/AnyKernel3
+          git tag -a $KSU_VERSION -m "KernelSU Version $KSU_VERSION"
+          git push --tags
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
