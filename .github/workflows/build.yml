@@ -20,10 +20,30 @@ jobs:
           git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1 -b android-13.0.0_r43 clang
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-10.0.0_r32 --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-10.0.0_r32 --depth=1
-          cd sdm845
           git clone https://github.com/KaguraiYoRoy/AnyKernel3-equuleus AnyKernel3 --depth=1
       - name: Setup KernelSU
         run: |
           cd $GITHUB_WORKSPACE/sdm845
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
-
+      - name : Build Kernel
+        run: |
+          cd $GITHUB_WORKSPACE/sdm845/KernelSU
+          KSU_VERSION=`expr 10000 + \`git rev-list --count HEAD\` + 200`
+          echo "KernelSU Version :$KSU_VERSION"
+          cd $GITHUB_WORKSPACE/sdm845
+          TARGET_KERNEL="Mi8Pro-LineageKernel-KernelSU$KSU_VERSION"
+          CURRENT_DIR=$(pwd)
+          ARCH="arm64"
+          CLANG_DIR="$GITHUB_WORKSPACE/clang/clang-r450784e"
+          CC="$CLANG_DIR/bin/clang"
+          OUT_DIR="./out"
+          CLANG_TRIPLE="aarch64-linux-gnu-"
+          CROSS_COMPILE="$GITHUB_WORKSPACE/aarch64-linux-android-4.9/bin/aarch64-linux-androidkernel-"
+          CROSS_COMPILE_ARM32="$GITHUB_WORKSPACE/arm-linux-androideabi-4.9/bin/arm-linux-androidkernel-"
+          CC_ADDITION_FLAGS="AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM_IAS=1 LLVM=1"
+          THREAD=$(nproc --all)
+          ANYKERNEL_DIR="$GITHUB_WORKSPACE/AnyKernel3"
+          args="-j$THREAD O=$OUT_DIR ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE CROSS_COMPILE_ARM32=$CROSS_COMPILE_ARM32 CC=$CC CLANG_TRIPLE=$CLANG_TRIPLE $CC_ADDITION_FLAGS"
+          echo "Args: $args"
+          make equuleus_user_defconfig
+          
