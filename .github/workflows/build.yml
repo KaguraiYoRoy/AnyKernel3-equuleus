@@ -25,14 +25,9 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/sdm845
           curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
-      - name : Build Kernel
+      - name: Build Kernel
         run: |
-          cd $GITHUB_WORKSPACE/sdm845/KernelSU
-          KSU_VERSION=`expr 10000 + \`git rev-list --count HEAD\` + 200`
-          echo "[+]KernelSU Version: $KSU_VERSION"
           cd $GITHUB_WORKSPACE/sdm845
-          TARGET_KERNEL="Mi8Pro-LineageKernel-KernelSU$KSU_VERSION"
-          CURRENT_DIR=$(pwd)
           ARCH="arm64"
           CLANG_DIR="$GITHUB_WORKSPACE/clang/clang-r450784d"
           CC="$CLANG_DIR/bin/clang"
@@ -50,3 +45,23 @@ jobs:
           make equuleus_user_defconfig $args
           echo "[+]Begin Build"
           make $args
+      - name: Compress
+        run: |
+          cd $GITHUB_WORKSPACE/sdm845/KernelSU
+          KSU_VERSION=`expr 10000 + \`git rev-list --count HEAD\` + 200`
+          TARGET_KERNEL="Mi8Pro-LineageKernel-KernelSU$KSU_VERSION"
+          echo "[+]KernelSU Version: $KSU_VERSION"
+          echo "[+]Target file: $TARGET_KERNEL"
+          cd $GITHUB_WORKSPACE/AnyKernel3
+          cp $GITHUB_WORKSPACE/sdm845/out/arch/arm64/boot/Image .
+          cp $GITHUB_WORKSPACE/sdm845/out/arch/arm64/boot/Image.gz .
+          cp $GITHUB_WORKSPACE/sdm845/out/arch/arm64/boot/Image.gz-dtb .
+          OUTPUT_FILE=${TARGET_KERNEL}-$(date +"%y.%m.%d").zip
+          echo "[+]Output: $OUTPUT_FILE"
+          zip -r $OUTPUT_FILE *
+          mv $OUTPUT_FILE $GITHUB_WORKSPACE
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            Mi8Pro*.zip
