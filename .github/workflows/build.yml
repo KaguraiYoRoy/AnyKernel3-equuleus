@@ -8,6 +8,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: test
+        run: | 
+          touch a.zip
+      - name: testrelease
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            a.zip
       - name: Download
         run: |
           echo "Free space:"
