@@ -23,7 +23,7 @@ jobs:
       - name: Setup KernelSU
         run: |
           cd $GITHUB_WORKSPACE/sdm845
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.5
       - name: Build Kernel
         run: |
           cd $GITHUB_WORKSPACE/sdm845
