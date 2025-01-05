@@ -11,7 +11,7 @@ do.systemless=0
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=equuleus
-supported.versions=14
+supported.versions=15
 supported.patchlevels=
 '; } # end properties
 

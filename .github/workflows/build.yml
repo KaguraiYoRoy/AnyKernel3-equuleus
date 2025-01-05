@@ -15,15 +15,16 @@ jobs:
           sudo apt update
           sudo apt install zip bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libncurses5 libsdl1.2-dev libssl-dev libwxgtk3.0-gtk3-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev make unzip python-is-python3
           echo "[+]Clone dependencies:"
-          git clone https://github.com/KaguraiYoRoy/android_kernel_xiaomi_sdm845 -b lineage-21 sdm845
+          git clone https://github.com/iYoRoy-AOSP-Institute/android_kernel_xiaomi_sdm845 -b lineage-22.0-erofs-anykernel sdm845
           git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 --depth=1 -b android-13.0.0_r43 clang
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-10.0.0_r32 --depth=1
           git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-10.0.0_r32 --depth=1
           git clone https://github.com/KaguraiYoRoy/AnyKernel3-equuleus AnyKernel3 --depth=1
       - name: Setup KernelSU
         run: |
-          cd $GITHUB_WORKSPACE/sdm845
-          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.5
+          echo "Skip setup KernelSU for non-ksu build"
+          #cd $GITHUB_WORKSPACE/sdm845
+          #curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.5
       - name: Build Kernel
         run: |
           cd $GITHUB_WORKSPACE/sdm845
@@ -46,7 +47,7 @@ jobs:
           make $args
       - name: Compress
         run: |
-          TARGET_KERNEL="Mi8Pro-LineageKernel-KernelSUv0.9.5"
+          TARGET_KERNEL="Mi8Pro-LineageKernel"
           echo "[+]KernelSU Version: v0.9.5"
           echo "[+]Target file: $TARGET_KERNEL"
           cd $GITHUB_WORKSPACE/AnyKernel3
@@ -60,6 +61,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: Android14
+          tag_name: Android15
           files: |
             Mi8Pro*.zip
